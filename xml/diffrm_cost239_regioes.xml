@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<eonsim version="0.2">
+    <ra module="EON_FDM"/>
+
+    <trace file="trace.tr"/>
+    <!--rate in Mbps 1000Mbps = 1Gbps | 'cos' represents the number of service classes-->
+    <traffic calls="10000" load="100" cos="1" statisticStart="0">
+        <!--'cos' here starts with '0'-->
+        <calls holding-time="1" rate="100000" cos="0" weight="50"/>
+        <calls holding-time="1" rate="150000" cos="0" weight="40"/>
+        <calls holding-time="1" rate="200000" cos="0" weight="30"/>
+        <calls holding-time="1" rate="250000" cos="0" weight="20"/>
+        <calls holding-time="1" rate="300000" cos="0" weight="10"/>
+    </traffic>
+	
+	<QoS>		
+		<service class="0" degradation-tolerance-min="0" degradation-tolerance-max="0" delay-tolerance-min="0" delay-tolerance-max="0" weight="2"/>
+		<service class="1" degradation-tolerance-min="0" degradation-tolerance-max="0" delay-tolerance-min="0.5" delay-tolerance-max="1" weight="4"/>
+		<service class="2" degradation-tolerance-min="0.25" degradation-tolerance-max="0.85" delay-tolerance-min="0" delay-tolerance-max="0" weight="4"/>
+		<service class="3" degradation-tolerance-min="0.25" degradation-tolerance-max="0.85" delay-tolerance-min="0.5" delay-tolerance-max="1" weight="8"/>
+	</QoS>
+
+    <virtual-topology  name="USNET">
+    </virtual-topology>
+    
+    <physical-topology name="USNET">
+        <nodes modulations="BPSK, QPSK, 8QAM, 16QAM, 32QAM, 64QAM, 128QAM, 256QAM" capacity="60">
+            <node id="0" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="1" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="2" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="3" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="4" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="5" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="6" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="7" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="8" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="9" grooming-in-ports="64" grooming-out-ports="64" /> 
+            <node id="10" grooming-in-ports="64" grooming-out-ports="64" />                         
+        </nodes>
+	<!-- Link weigth = distance in Km
+             Link delay = 1ms for 200Km 
+             The 'slot-size' is in MHz  -->
+        <links slots="400" guardband="2" slot-size="12500">
+            <link id="0" source="0" destination="1" delay="1" weight="1310"/>
+            <link id="1" source="0" destination="2" delay="1" weight="760"/>
+            <link id="2" source="0" destination="3" delay="1" weight="390"/>
+			<link id="3" source="0" destination="6" delay="1" weight="740"/>
+
+            <link id="4" source="1" destination="0" delay="1" weight="1310"/>
+            <link id="5" source="1" destination="2" delay="1" weight="550"/>
+            <link id="6" source="1" destination="4" delay="1" weight="390"/>
+            <link id="7" source="1" destination="7" delay="1" weight="450"/>
+            
+            <link id="8" source="2" destination="0" delay="1" weight="760"/>
+            <link id="9" source="2" destination="1" delay="1" weight="550"/>
+            <link id="10" source="2" destination="3" delay="1" weight="660"/>
+            <link id="11" source="2" destination="4" delay="1" weight="210"/>
+            <link id="12" source="2" destination="5" delay="1" weight="390"/>
+            
+            <link id="13" source="3" destination="0" delay="1" weight="390"/>
+            <link id="14" source="3" destination="2" delay="1" weight="660"/>
+            <link id="15" source="3" destination="6" delay="1" weight="340"/>
+            <link id="16" source="3" destination="7" delay="1" weight="1090"/>
+            <link id="17" source="3" destination="9" delay="1" weight="660"/>
+
+            <link id="18" source="4" destination="1" delay="1" weight="390"/>
+            <link id="19" source="4" destination="2" delay="1" weight="210"/>
+            <link id="20" source="4" destination="5" delay="1" weight="220"/>
+            <link id="21" source="4" destination="7" delay="1" weight="300"/>
+            <link id="22" source="4" destination="10" delay="1" weight="930"/>
+
+            <link id="23" source="5" destination="2" delay="1" weight="390"/>
+            <link id="24" source="5" destination="4" delay="1" weight="220"/>
+            <link id="25" source="5" destination="6" delay="1" weight="730"/>
+            <link id="26" source="5" destination="7" delay="1" weight="400"/>
+            <link id="27" source="5" destination="8" delay="1" weight="350"/>
+
+            <link id="28" source="6" destination="0" delay="1" weight="740"/>
+            <link id="29" source="6" destination="3" delay="1" weight="340"/>
+            <link id="30" source="6" destination="5" delay="1" weight="730"/>
+            <link id="31" source="6" destination="8" delay="1" weight="565"/>
+            <link id="32" source="6" destination="9" delay="1" weight="320"/>
+
+            <link id="33" source="7" destination="1" delay="1" weight="450"/>
+            <link id="34" source="7" destination="3" delay="1" weight="1090"/>
+            <link id="35" source="7" destination="4" delay="1" weight="300"/>
+            <link id="36" source="7" destination="5" delay="1" weight="400"/>
+            <link id="37" source="7" destination="8" delay="1" weight="600"/>
+            <link id="38" source="7" destination="10" delay="1" weight="820"/>
+
+            <link id="39" source="8" destination="5" delay="1" weight="350"/>
+            <link id="40" source="8" destination="6" delay="1" weight="565"/>
+            <link id="41" source="8" destination="7" delay="1" weight="600"/>
+            <link id="42" source="8" destination="9" delay="1" weight="730"/>
+            <link id="43" source="8" destination="10" delay="1" weight="320"/>
+
+            <link id="44" source="9" destination="3" delay="1" weight="660"/>
+            <link id="45" source="9" destination="6" delay="1" weight="320"/>
+            <link id="46" source="9" destination="8" delay="1" weight="730"/>
+            <link id="47" source="9" destination="10" delay="1" weight="820"/>
+
+            <link id="48" source="10" destination="4" delay="1" weight="930"/>
+            <link id="49" source="10" destination="7" delay="1" weight="820"/>
+            <link id="50" source="10" destination="8" delay="1" weight="320"/>
+            <link id="51" source="10" destination="9" delay="1" weight="820"/>
+               
+        </links>
+    </physical-topology>
+    <disaster-event Events_Num="2" >
+        <disaster-area numNodes="1" numLinks="10">  
+            <nodes>
+                <node id="7"/>                
+            </nodes>
+            <links>   
+                <link id="33"/>             
+                <link id="34"/>  
+                <link id="35"/>              
+                <link id="36"/>
+                <link id="37"/>
+                <link id="38"/>
+
+                <link id="7"/>
+                <link id="16"/>   
+                <link id="21"/>  
+                <link id="41"/>
+                <link id="49"/>               
+            </links>
+        </disaster-area>
+        <disaster-area numNodes="1" numLinks="8">  
+            <nodes>            
+                <node id="9"/>                
+            </nodes>
+            <links>
+                <link id="44"/>
+                <link id="45"/>
+                <link id="46"/>
+                <link id="47"/>
+
+                <link id="17"/>
+                <link id="32"/>
+                <link id="42"/>
+                <link id="51"/>   
+                
+            </links>
+        </disaster-area>     
+    </disaster-event>	
+</eonsim>
