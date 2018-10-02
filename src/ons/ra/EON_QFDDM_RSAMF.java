@@ -13,11 +13,13 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import static ons.ra.EON_FDM.convertIntegers;
 
 /**
- * @author Gab
+ * @author Brenno Serrato
+ * C:\Users\Tibiano\IdeaProjects\ICC\ons_Final\xml\stest.xml 1 1 50 50 1
  */
 public class EON_QFDDM_RSAMF implements RA {
 
@@ -109,24 +111,20 @@ public class EON_QFDDM_RSAMF implements RA {
                     candidate.setSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getSlotsAvailableToArray(candidate.getRequiredSlots()));
                     candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
                     candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
-                    candidate.setFragmentation((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots());
+                    candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
                 }
             }
         }
 
-        int currentCandidate = -1;
-        double lessFragPathValue = Double.POSITIVE_INFINITY;
-        int lessFragPathId = -1;
 
-        for (Candidate candidate : candidateArrayList) {
-            currentCandidate++;
-            if (candidate.getFragmentation() < lessFragPathValue) {
-                lessFragPathId = currentCandidate;
-                lessFragPathValue = candidate.getFragmentation();
-            }
+
+        Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation));
+        for (Candidate c: candidateArrayList) {
+         //   System.out.println("CAND = " + c.getPath() + " FRAG = " + c.getFragmentation());
         }
 
-        Candidate smallestFrag = candidateArrayList.get(lessFragPathId);
+        for (int k = 0; k < candidateArrayList.size(); k++) {
+        Candidate smallestFrag = getSmallestFrag(candidateArrayList,k);
 
         for (int i = 0; i < smallestFrag.getLinks().length; i++) {
             smallestFrag.setSlots(((EONLink) cp.getPT().getLink(smallestFrag.getLinks()[i]))
@@ -144,6 +142,7 @@ public class EON_QFDDM_RSAMF implements RA {
                     // Single-hop routing (end-to-end lightpath)
                     lps[0] = cp.getVT().getLightpath(id);
                     if (cp.acceptFlow(flow.getID(), lps)) {
+                    //    System.out.println(smallestFrag.getPath() + " FRAG = " + smallestFrag.getFragmentation());
                         return;
                     } else {
                         // Something wrong
@@ -154,6 +153,10 @@ public class EON_QFDDM_RSAMF implements RA {
             }
 
         }
+        }
+
+     //   System.out.println("Nenhum dos caminhos foi autorizado, bloqueando a requisição");
+        cp.blockFlow(flow.getID());
 
 
     }
@@ -476,6 +479,32 @@ public class EON_QFDDM_RSAMF implements RA {
 
         }
 
+    }
+
+
+    private Candidate getSmallestFrag(List<Candidate> candidateList, Integer k){
+        /*int currentCandidate = -1;
+        double lessFragPathValue = Double.POSITIVE_INFINITY;
+        int lessFragPathId = -1;
+
+        for (Candidate candidate : candidateList) {
+            currentCandidate++;
+            if (candidate.getFragmentation() < lessFragPathValue) {
+                lessFragPathId = currentCandidate;
+                lessFragPathValue = candidate.getFragmentation();
+            }
+            System.out.println("CAND = " + candidate.getPath() + " FRAG = " + candidate.getFragmentation());
+        }
+
+        return candidateList.get(lessFragPathId);*/
+
+//        if (k > 0) {
+//            System.out.println(candidateList.get(k - 1).getPath() + " NEGADO");
+//            System.out.println("Tentando com o = " + candidateList.get(k).getPath());
+//        }
+//        else
+//            System.out.println("Tentando com o = " + candidateList.get(k).getPath());
+        return candidateList.get(k);
     }
 
 

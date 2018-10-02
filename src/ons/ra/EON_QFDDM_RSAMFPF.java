@@ -12,13 +12,14 @@ import ons.util.YenKSP;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import static ons.ra.EON_FDM.convertIntegers;
 
 /**
- * @author Gab
+ * @author Brenno Serrato
  */
-public class EON_QFDDM_RSAMF_test implements RA {
+public class EON_QFDDM_RSAMFPF implements RA {
 
     private ControlPlaneForRA cp;
     private WeightedGraph graph;
@@ -53,26 +54,19 @@ public class EON_QFDDM_RSAMF_test implements RA {
         int[] nodes;
         int[] links;
         long id;
-        ArrayList<Candidate> candidates = new ArrayList<>();
+        int current_candidate = -1;
+        ArrayList<Candidate> candidateArrayList = new ArrayList<>();
         LightPath[] lps = new LightPath[1];          
        /* ArrayList<Integer>[] paths = Ye nKSP.kShortestPaths(graph, flow.getSource(), flow.getDestination(), 3);
         flow.setPaths(paths);   */
-        System.out.println("Arrival!");
-        System.out.println("Chegou Flow = " + flow.getSource() + " até " + flow.getDestination());
         ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(cp.getPT().getWeightedGraph(), flow.getSource(), flow.getDestination(), 3);
-        System.out.println("Possíveis caminhos:");
-        for (int i = 0; i < paths.length; i++)
-            System.out.println(paths[i]);
         flow.setPaths(paths);
-        //this.graph = this.getPostDisasterGraph(cp.getPT());
 
-        int currentCandidate = -1;
-        int lessFragPathId = -1;
-        Double lessFragPathValue = Double.POSITIVE_INFINITY;
         for (ArrayList<Integer> path : paths)
-            candidates.add(new Candidate(path));
+            candidateArrayList.add(new Candidate(path));
+
         OUTER:
-        for (Candidate candidate : candidates) {
+        for (Candidate candidate : candidateArrayList) {
             candidate.setNodes(convertIntegers(candidate.getPath()));
 
             // Se não há caminho disponível
@@ -83,7 +77,7 @@ public class EON_QFDDM_RSAMF_test implements RA {
             }
 
             // Cria o vetor de links do caminho
-            candidate.setLinks(new int[candidate.getNodes().length]);
+            candidate.setLinks(new int[candidate.getNodes().length - 1]);
             for (int j = 0; j < candidate.getNodes().length - 1; j++)
                 candidate.getLinks()[j] = cp.getPT().getLink(candidate.getNodes()[j], candidate.getNodes()[j + 1]).getID();
 
@@ -104,67 +98,67 @@ public class EON_QFDDM_RSAMF_test implements RA {
                     return;
                 }
             }
+        }
 
-            // Calcular os blocos livres de cada candidato, maiores slots, fragmentação e slots que usará
-            for (int i = 0; i < candidate.getLinks().length; i++)
-            {
-                candidate.setSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getSlotsAvailableToArray(candidate.getRequiredSlots()));
-                candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
-                candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
-
-
-                // Cria o lightpath a cada link
-                for (int j = 0 ; j < candidate.getSlots().length; j++)
-                {
-                    candidate.setLp(cp.createCandidateEONLightPath(
-                            flow.getSource(),
-                            flow.getDestination(),
-                            candidate.getLinks(),
-                            candidate.getSlots()[j],
-                            (candidate.getSlots()[j] + candidate.getRequiredSlots() - 1),
-                            candidate.getModulation()));
+        // Se ficou inválido o caminho ele exclui da lista
+        for (Candidate candidate : candidateArrayList) {
+            if (!candidate.isValid())
+                candidateArrayList.remove(candidate);
+            else {
+                for (int i = 0; i < candidate.getLinks().length; i++) {
+                    candidate.setSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getSlotsAvailableToArray(candidate.getRequiredSlots()));
+                    candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
+                    candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
+                    candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
                 }
             }
-            candidate.setFragmentation((double) candidate.getLargerSlotBlock()/ (double) candidate.getFreeSlots());
         }
 
 
-        for (Candidate candidate:candidates) {
-            currentCandidate++;
-            if (candidate.getFragmentation() < lessFragPathValue) {
-                lessFragPathId = currentCandidate;
-                lessFragPathValue = candidate.getFragmentation();
+
+        Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation).reversed());
+        for (Candidate c: candidateArrayList) {
+          //  System.out.println("CAND = " + c.getPath() + " FRAG = " + c.getFragmentation());
+        }
+
+        for (int k = 0; k < candidateArrayList.size(); k++) {
+        Candidate smallestFrag = getSmallestFrag(candidateArrayList,k);
+
+        for (int i = 0; i < smallestFrag.getLinks().length; i++) {
+            smallestFrag.setSlots(((EONLink) cp.getPT().getLink(smallestFrag.getLinks()[i]))
+                    .getSlotsAvailableToArray(smallestFrag.getRequiredSlots()));
+
+            for (int j = 0; j < smallestFrag.getSlots().length; j++) {
+                        smallestFrag.setLp(cp.createCandidateEONLightPath(
+                        flow.getSource(),
+                        flow.getDestination(),
+                        smallestFrag.getLinks(),
+                        smallestFrag.getSlots()[j],
+                        (smallestFrag.getSlots()[j] + smallestFrag.getRequiredSlots() - 1),
+                        smallestFrag.getModulation()));
+                if ((id = cp.getVT().createLightpath(smallestFrag.getLp())) >= 0) {
+                    // Single-hop routing (end-to-end lightpath)
+                    lps[0] = cp.getVT().getLightpath(id);
+                    if (cp.acceptFlow(flow.getID(), lps)) {
+                  //      System.out.println(smallestFrag.getPath() + " FRAG = " + smallestFrag.getFragmentation());
+                        return;
+                    } else {
+                        // Something wrong
+                        // Dealocates the lightpath in VT and try again
+                        cp.getVT().deallocatedLightpath(id);
+                    }
+                }
             }
+
+        }
         }
 
-        Candidate smallestFrag = candidates.get(lessFragPathId);
-
-        System.out.println(smallestFrag.getLp());
-        id = cp.getVT().createLightpath(smallestFrag.getLp());
-        lps[0] = cp.getVT().getLightpath(id);
-        cp.acceptFlow(flow.getID(),lps);
-        return;
+     //   System.out.println("Nenhum dos caminhos foi autorizado, bloqueando a requisição");
+        cp.blockFlow(flow.getID());
 
 
-
-
-        // antigo first fit
-//        if ((id = cp.getVT().createLightpath(lp)) >= 0) {
-//            // Single-hop routing (end-to-end lightpath)
-//            lps[0] = cp.getVT().getLightpath(id);
-//            if (cp.acceptFlow(flow.getID(), lps)) {
-//                //  System.out.println("Aceito! o caminho = " + links[i]);
-//                // return;
-//            } else {
-//                // Something wrong
-//                // Dealocates the lightpath in VT and try again
-//                cp.getVT().deallocatedLightpath(id);
-//            }
-//        }
-
-        // Block the call
-        //System.out.println("Block Arrival");
     }
+
 
     private boolean rerouteFlow(Flow flow) {
 
@@ -483,6 +477,32 @@ public class EON_QFDDM_RSAMF_test implements RA {
 
         }
 
+    }
+
+
+    private Candidate getSmallestFrag(List<Candidate> candidateList, Integer k){
+        /*int currentCandidate = -1;
+        double lessFragPathValue = Double.POSITIVE_INFINITY;
+        int lessFragPathId = -1;
+
+        for (Candidate candidate : candidateList) {
+            currentCandidate++;
+            if (candidate.getFragmentation() < lessFragPathValue) {
+                lessFragPathId = currentCandidate;
+                lessFragPathValue = candidate.getFragmentation();
+            }
+            System.out.println("CAND = " + candidate.getPath() + " FRAG = " + candidate.getFragmentation());
+        }
+
+        return candidateList.get(lessFragPathId);*/
+
+//        if (k > 0) {
+//            System.out.println(candidateList.get(k-1).getPath() + " NEGADO");
+//            System.out.println("Tentando com o = " + candidateList.get(k).getPath());
+//        }
+//        else
+//            System.out.println("Tentando com o = " + candidateList.get(k).getPath());
+        return candidateList.get(k);
     }
 
 

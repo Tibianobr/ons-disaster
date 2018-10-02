@@ -126,6 +126,7 @@ public class EON_QFDDM implements RA{
                         // Single-hop routing (end-to-end lightpath)
                         lps[0] = cp.getVT().getLightpath(id);
                         if (cp.acceptFlow(flow.getID(), lps)) {
+                          //  System.out.println(path);
                             return;
                         } else {
                             // Something wrong
