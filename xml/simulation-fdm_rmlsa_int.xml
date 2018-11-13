@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<eonsim version="0.2">
+    <ra module="EON_QFDDM_RSAMF"/>
+
+    <trace file="trace.tr"/>
+    <!--rate in Mbps 1000Mbps = 1Gbps | 'cos' represents the number of service classes-->
+    <traffic calls="100000" load="100" cos="1" statisticStart="0">
+        <!--'cos' here starts with '0'-->
+        <calls holding-time="1" rate="100000" cos="0" weight="50"/>
+        <calls holding-time="1" rate="150000" cos="0" weight="40"/>
+        <calls holding-time="1" rate="200000" cos="0" weight="30"/>
+        <calls holding-time="1" rate="250000" cos="0" weight="20"/>
+        <calls holding-time="1" rate="300000" cos="0" weight="10"/>
+    </traffic>
+	
+	<QoS>		
+		<service class="0" degradation-tolerance-min="0" degradation-tolerance-max="0" delay-tolerance-min="0" delay-tolerance-max="0" weight="2"/>
+        <service class="1" degradation-tolerance-min="0" degradation-tolerance-max="0" delay-tolerance-min="0.5" delay-tolerance-max="1" weight="4"/>
+        <service class="2" degradation-tolerance-min="0.25" degradation-tolerance-max="0.85" delay-tolerance-min="0" delay-tolerance-max="0" weight="4"/>
+        <service class="3" degradation-tolerance-min="0.25" degradation-tolerance-max="0.85" delay-tolerance-min="0.5" delay-tolerance-max="1" weight="8"/>
+	</QoS>
+
+    <virtual-topology  name="USNET">
+    </virtual-topology>
+    
+    <physical-topology name="USNET">
+        <nodes modulations="BPSK, QPSK, 8QAM, 16QAM, 32QAM, 64QAM, 128QAM, 256QAM" capacity="60">
+            <node id="0" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="1" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="2" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="3" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="4" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="5" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="6" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="7" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="8" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="9" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="10" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="11" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="12" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="13" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="14" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="15" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="16" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="17" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="18" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="19" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="20" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="21" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="22" grooming-in-ports="64" grooming-out-ports="64" />
+            <node id="23" grooming-in-ports="64" grooming-out-ports="64" />            
+        </nodes>
+	<!-- Link weigth = distance in Km
+             Link delay = 1ms for 200Km 
+             The 'slot-size' is in MHz  -->
+        <links slots="400" guardband="2" slot-size="12500">
+            <link id="0" source="0" destination="1" delay="1" weight="800"/>
+            <link id="1" source="0" destination="5" delay="1" weight="1000"/>
+
+            <link id="2" source="1" destination="0" delay="1" weight="800"/>
+            <link id="3" source="1" destination="5" delay="1" weight="950"/>
+            <link id="4" source="1" destination="2" delay="1" weight="1000"/>
+
+            <link id="5" source="2" destination="1" delay="1" weight="1100"/>
+            <link id="6" source="2" destination="6" delay="1" weight="1000"/>
+            <link id="7" source="2" destination="3" delay="1" weight="250"/>
+            <link id="8" source="2" destination="4" delay="1" weight="1000"/>
+
+            <link id="9" source="3" destination="2" delay="1" weight="250"/>
+            <link id="10" source="3" destination="4" delay="1" weight="800"/>
+            <link id="11" source="3" destination="6" delay="1" weight="850"/>
+
+            <link id="12" source="4" destination="2" delay="1" weight="1000"/>
+            <link id="13" source="4" destination="3" delay="1" weight="800"/>
+            <link id="14" source="4" destination="7" delay="1" weight="1200"/>
+
+            <link id="15" source="5" destination="0" delay="1" weight="1000"/>
+            <link id="16" source="5" destination="1" delay="1" weight="950"/>
+            <link id="17" source="5" destination="6" delay="1" weight="1000"/>
+            <link id="18" source="5" destination="8" delay="1" weight="1200"/>
+            <link id="19" source="5" destination="10" delay="1" weight="1900"/>
+
+            <link id="20" source="6" destination="2" delay="1" weight="1000"/>
+            <link id="21" source="6" destination="3" delay="1" weight="850"/>
+            <link id="22" source="6" destination="7" delay="1" weight="1150"/>
+            <link id="23" source="6" destination="8" delay="1" weight="1000"/>
+            <link id="24" source="6" destination="5" delay="1" weight="1000"/>
+
+            <link id="25" source="7" destination="4" delay="1" weight="1200"/>
+            <link id="26" source="7" destination="6" delay="1" weight="1150"/>
+            <link id="27" source="7" destination="9" delay="1" weight="900"/>
+
+            <link id="28" source="8" destination="6" delay="1" weight="1000"/>
+            <link id="29" source="8" destination="5" delay="1" weight="1200"/>
+            <link id="30" source="8" destination="10" delay="1" weight="1400"/>
+            <link id="31" source="8" destination="11" delay="1" weight="1000"/>
+            <link id="32" source="8" destination="9" delay="1" weight="1000"/>
+
+            <link id="33" source="9" destination="7" delay="1" weight="900"/>
+            <link id="34" source="9" destination="8" delay="1" weight="1000"/>
+            <link id="35" source="9" destination="12" delay="1" weight="950"/>
+            <link id="36" source="9" destination="13" delay="1" weight="850"/>
+
+            <link id="37" source="10" destination="5" delay="1" weight="1900"/>
+            <link id="38" source="10" destination="8" delay="1" weight="1400"/>
+            <link id="39" source="10" destination="11" delay="1" weight="900"/>
+            <link id="40" source="10" destination="18" delay="1" weight="2800"/>            
+            <link id="41" source="10" destination="14" delay="1" weight="1300"/>
+
+            <link id="42" source="11" destination="10" delay="1" weight="900"/>
+            <link id="43" source="11" destination="8" delay="1" weight="1000"/>
+            <link id="44" source="11" destination="12" delay="1" weight="900"/>
+            <link id="45" source="11" destination="15" delay="1" weight="1000"/>
+
+            <link id="46" source="12" destination="11" delay="1" weight="900"/>
+            <link id="47" source="12" destination="9" delay="1" weight="950"/>
+            <link id="48" source="12" destination="13" delay="1" weight="650"/>
+            <link id="49" source="12" destination="16" delay="1" weight="1100"/>
+
+            <link id="50" source="13" destination="9" delay="1" weight="850"/>            
+            <link id="51" source="13" destination="12" delay="1" weight="650"/>
+            <link id="52" source="13" destination="17" delay="1" weight="1200"/>
+
+            <link id="53" source="14" destination="10" delay="1" weight="1300"/>
+            <link id="54" source="14" destination="15" delay="1" weight="800"/>
+            <link id="55" source="14" destination="19" delay="1" weight="1300"/>
+
+            <link id="56" source="15" destination="11" delay="1" weight="1000"/>
+            <link id="57" source="15" destination="16" delay="1" weight="1000"/>
+            <link id="58" source="15" destination="21" delay="1" weight="800"/>
+            <link id="59" source="15" destination="20" delay="1" weight="1000"/>
+            <link id="60" source="15" destination="14" delay="1" weight="800"/>
+
+            <link id="61" source="16" destination="12" delay="1" weight="1100"/>
+            <link id="62" source="16" destination="17" delay="1" weight="800"/>
+            <link id="63" source="16" destination="22" delay="1" weight="1000"/>
+            <link id="64" source="16" destination="21" delay="1" weight="850"/>
+            <link id="65" source="16" destination="15" delay="1" weight="1000"/>
+
+            <link id="66" source="17" destination="13" delay="1" weight="1200"/>
+            <link id="67" source="17" destination="16" delay="1" weight="800"/>
+            <link id="68" source="17" destination="23" delay="1" weight="900"/>
+
+            <link id="69" source="18" destination="10" delay="1" weight="2800"/>
+            <link id="70" source="18" destination="19" delay="1" weight="1200"/>
+
+            <link id="71" source="19" destination="14" delay="1" weight="1300"/>
+            <link id="72" source="19" destination="20" delay="1" weight="700"/>
+            <link id="73" source="19" destination="18" delay="1" weight="1200"/>
+
+            <link id="74" source="20" destination="19" delay="1" weight="700"/>
+            <link id="75" source="20" destination="15" delay="1" weight="1000"/>
+            <link id="76" source="20" destination="21" delay="1" weight="300"/>
+
+            <link id="77" source="21" destination="15" delay="1" weight="800"/>
+            <link id="78" source="21" destination="20" delay="1" weight="300"/>
+            <link id="79" source="21" destination="16" delay="1" weight="850"/>
+            <link id="80" source="21" destination="22" delay="1" weight="600"/>
+
+            <link id="81" source="22" destination="21" delay="1" weight="600"/>
+            <link id="82" source="22" destination="16" delay="1" weight="1000"/>
+            <link id="83" source="22" destination="23" delay="1" weight="900"/>
+
+            <link id="84" source="23" destination="22" delay="1" weight="900"/>
+            <link id="85" source="23" destination="17" delay="1" weight="900"/>            
+        </links>
+    </physical-topology>
+
+    <disaster-event Events_Num="3" >
+
+        <disaster-area numNodes="1" numLinks="8">  
+            <nodes>
+                <node id="3"/>                
+            </nodes>
+            <links>   
+                <link id="6"/>             
+                <link id="7"/>  
+                <link id="9"/>              
+                <link id="10"/>
+                <link id="11"/>
+                <link id="13"/>
+                <link id="20"/>
+                <link id="21"/>                
+            </links>
+        </disaster-area>
+
+        <disaster-area numNodes="1" numLinks="8">  
+            <nodes>            
+                <node id="11"/>                
+            </nodes>
+            <links>
+                <link id="31"/>
+                <link id="39"/>
+                <link id="46"/>
+                <link id="42"/>
+                <link id="43"/>
+                <link id="44"/>
+                <link id="45"/>
+                <link id="56"/>              
+                
+            </links>
+        </disaster-area>
+        <disaster-area numNodes="1" numLinks="10">  
+            <nodes>       
+                <node id="16"/>
+            </nodes>
+            <links>
+                <link id="61"/>
+                <link id="62"/>
+                <link id="63"/>
+                <link id="64"/>
+                <link id="65"/>
+                <link id="49"/>
+                <link id="57"/>
+                <link id="67"/>
+                <link id="79"/>
+                <link id="82"/>                
+            </links>
+        </disaster-area>
+
+        <disaster-area numNodes="0" numLinks="10">  
+            <nodes>
+            </nodes>
+            <links>
+                <link id="58"/>
+                <link id="59"/>
+                <link id="77"/>
+                <link id="75"/>                              
+            </links>
+        </disaster-area>
+
+    </disaster-event>
+
+	
+</eonsim>
