@@ -101,7 +101,7 @@ public class TrafficGenerator {
         // Process Services
         NodeList servicesList = xml2.getElementsByTagName("service");
         numberServicesTypes = servicesList.getLength();
-        if (Simulator.verbose) {
+        if (true) {
             System.out.println(Integer.toString(numberServicesTypes) + " type(s) of services:");
         }
 
@@ -127,7 +127,7 @@ public class TrafficGenerator {
             if(delayTolMax!=0)
                 delayTol = (float) ThreadLocalRandom.current().nextDouble(delayTolMin, delayTolMax + 1);
             servicesTypesInfo[i] = new ServiceInfo(serviceClass,degrTol,delayTol,weight);
-            if (Simulator.verbose) {
+            if (true) {
                 System.out.println("#################################");
                 System.out.println("Class: " + Integer.toString(serviceClass) + ".");
                 System.out.println("Degradation: " + Float.toString(degrTol) + ".");

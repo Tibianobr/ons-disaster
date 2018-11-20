@@ -376,7 +376,7 @@ public class EON_QFDDM implements RA{
             if (flow.isDegradeTolerant()) {
                 aux_degr = (flow.getMaxDegradationNumberEon()) / (float) flow.getRequiredSlots();
             }*/
-
+            //System.out.println(flow.getServiceInfo().getServiceInfo() + " TOLERANTE = " + flow.getServiceInfo().getDegradationTolerance());
             if (flow.calcDegradation() >= 1-flow.getServiceInfo().getDegradationTolerance()) {
                 if(interuptedFlows.contains(flow)){
                     
