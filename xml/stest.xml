@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <eonsim version="0.2">
-    <ra module="EON_QFDDM"/>
+    <ra module="EON_QFDDM_NOTG"/>
 
     <trace file="trace.tr"/>
     <!--rate in Mbps 1000Mbps = 1Gbps | 'cos' represents the number of service classes _RSAMF_V2-->
@@ -17,9 +17,9 @@
     <QoS>
         <!-- De cima para baixo: Full, Delay Tolerant, Degradation, Extreme-->
         <service class="0" degradation-tolerance-min="0" degradation-tolerance-max="0" delay-tolerance-min="0" delay-tolerance-max="0" weight="2"/>
-        <service class="1" degradation-tolerance-min="0.1" degradation-tolerance-max="0.5" delay-tolerance-min="0" delay-tolerance-max="0" weight="4"/>
+        <service class="1" degradation-tolerance-min="0.10" degradation-tolerance-max="0.50" delay-tolerance-min="0" delay-tolerance-max="0" weight="4"/>
         <service class="2" degradation-tolerance-min="0" degradation-tolerance-max="0" delay-tolerance-min="0.10" delay-tolerance-max="0.50" weight="4"/>
-        <service class="3" degradation-tolerance-min="0.1" degradation-tolerance-max="0.5" delay-tolerance-min="0.10" delay-tolerance-max="0.50" weight="8"/>
+        <service class="3" degradation-tolerance-min="0.10" degradation-tolerance-max="0.50" delay-tolerance-min="0.10" delay-tolerance-max="0.50" weight="8"/>
     </QoS>
 
     <virtual-topology  name="USNET">
