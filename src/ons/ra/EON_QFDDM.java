@@ -238,7 +238,6 @@ public class EON_QFDDM implements RA{
             int requiredSlots = Modulation.convertRateToSlot((int) flow.getMaxRate(), EONPhysicalTopology.getSlotSize(), modulation);
             if(requiredSlots>=100000)
                     continue OUTER;
-            
             // Evaluate if each link have space to the required slots
             for (int i = 0; i < links.length; i++) {
                 if (((EONLink) cp.getPT().getLink(links[i])).isIsInterupted()||!((EONLink) cp.getPT().getLink(links[i])).hasSlotsAvaiable(requiredSlots)) {
@@ -350,7 +349,8 @@ public class EON_QFDDM implements RA{
         //Step 4: For the first connection c in set H, if αc ≥ 1, remove
         //this connection, go to Step 4; otherwise,
         //upgrade connection c by 1 bandwidth unit; if
-        //successful, go to Step 3; otherwise, go to Step 5.        
+        //successful, go to Step 3; otherwise, go to Step 5.
+        System.out.println(allFlows.size());
         while (allFlows.size() > 0) {
 
             Collections.sort(allFlows, comparator);
@@ -367,6 +367,13 @@ public class EON_QFDDM implements RA{
             if (flow.isDegradeTolerant()) {
                 aux_degr = (flow.getMaxDegradationNumberEon()) / (float) flow.getRequiredSlots();
             }*/
+
+           // System.out.println(flow.getBwReq());
+           // System.out.println(flow.getServiceInfo().getDegradationTolerance());
+          //  System.out.println(flow.getBwReq()*flow.getServiceInfo().getDegradationTolerance());
+          //  System.out.println("######################");
+          //  System.out.println(flow.getServiceInfo().getDegradationTolerance());
+
 
             if (flow.calcDegradation() >= 1-flow.getServiceInfo().getDegradationTolerance()) {
                 if(interuptedFlows.contains(flow)){

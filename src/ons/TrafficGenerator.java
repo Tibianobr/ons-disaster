@@ -122,12 +122,12 @@ public class TrafficGenerator {
             weight = Integer.parseInt(((Element) servicesList.item(i)).getAttribute("weight"));  
             float degrTol = 0;
             if(degrTolMax!=0)
-                degrTol = (float) ThreadLocalRandom.current().nextDouble(degrTolMin, degrTolMax + 1);
+                degrTol = (float) ThreadLocalRandom.current().nextDouble(degrTolMin, degrTolMax);
             float delayTol = 0;
             if(delayTolMax!=0)
-                delayTol = (float) ThreadLocalRandom.current().nextDouble(delayTolMin, delayTolMax + 1);
+                delayTol = (float) ThreadLocalRandom.current().nextDouble(delayTolMin, delayTolMax);
             servicesTypesInfo[i] = new ServiceInfo(serviceClass,degrTol,delayTol,weight);
-            if (Simulator.verbose) {
+            if (false) {
                 System.out.println("#################################");
                 System.out.println("Class: " + Integer.toString(serviceClass) + ".");
                 System.out.println("Degradation: " + Float.toString(degrTol) + ".");

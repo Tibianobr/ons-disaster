@@ -279,131 +279,40 @@ public class EON_QFDDM_NOTG implements RA {
 
     @Override
     public void disasterArrival(DisasterArea area) {
-
         ArrayList<Flow> survivedFlows = cp.getMappedFlowsAsList();
-        ///Step 1: For each existing/survived connection of set
-        ///S(⊂C), degrade the bandwidth to one unit.
-
         for (Flow f : survivedFlows) {
-
             if (f.isDegradeTolerant()) {
-
-                cp.degradeFlow(f, /*f.getMaxDegradationNumber()*/ f.getMaxDegradationNumberEon());
-
+                cp.degradeFlow(f, f.getMaxDegradationNumberEon());
             }
-
         }
-
-        //Step 2: For each disrupted connection of set D(⊂C), reprovision
-        //it on the shortest available candidate
-        //path P(c,k) with one bandwidth unit.
-        /*for (Flow flow : cp.getInteruptedFlows()) {
-
-            rerouteFlow(flow);
-
-        }*/
-
         ArrayList<Flow> interuptedFlows = new ArrayList<Flow>(cp.getInteruptedFlows());
-        /*for (Iterator<Flow> i = interuptedFlows.iterator(); i.hasNext();) {
-            Flow flow = i.next();
-            if (flow.calcDegradation() == 0.0f || Double.isNaN(flow.calcDegradation())) {
-                cp.dropFlow(flow);
-                flow.updateTransmittedBw();
-                i.remove();
-
-            }
-
-        }*/
-
-        //Step 3: Sort all connections of set H=(S∪D) in ascending
-        //order of αc.
         ArrayList<Flow> allFlows = new ArrayList<Flow>();
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
-
         Comparator<Flow> comparator = new Comparator<Flow>() {
             @Override
             public int compare(Flow t, Flow t1) {
-
-                int t1Deg = t.getServiceInfo().getServiceInfo();
-                int t2Deg = t1.getServiceInfo().getServiceInfo();
-                int sComp = Integer.compare(t1Deg, t2Deg);
-
-                if (sComp != 0) {
-
-                    return sComp;
-
-                } else {
-
-                    return Double.compare(t.getServiceInfo().getDelayTolerance(), t1.getServiceInfo().getDelayTolerance());
-
+                if (t.getBwReq() > t1.getBwReq()) {
+                    return -1;
+                } else if (t.getBwReq() < t1.getBwReq()) {
+                    return 1;
                 }
-
+                return 0;
             }
         };
-
-
-        //Step 4: For the first connection c in set H, if αc ≥ 1, remove
-        //this connection, go to Step 4; otherwise,
-        //upgrade connection c by 1 bandwidth unit; if
-        //successful, go to Step 3; otherwise, go to Step 5.
         while (allFlows.size() > 0) {
-
             Collections.sort(allFlows, comparator);
             Flow flow = allFlows.get(0);
-
-            /*System.out.println();
-            for(Flow f:allFlows){
-
-                System.out.println("Classe de serviço: " + f.getServiceInfo().getServiceInfo() + " Degradation Rate: " + f.calcDegradation());
-
-            }
-            System.out.println();*/
-            /*float aux_degr = 1;
-            if (flow.isDegradeTolerant()) {
-                aux_degr = (flow.getMaxDegradationNumberEon()) / (float) flow.getRequiredSlots();
-            }*/
-
-            if (flow.calcDegradation() >= 1 - flow.getServiceInfo().getDegradationTolerance()) {
-                if (interuptedFlows.contains(flow)) {
-
-                    flow.updateTransmittedBw();
-                    cp.restoreFlow(flow);
-
-                }
-
+            //TODO
+            if (0 >= (flow.getBwReq() * flow.getServiceInfo().getDegradationTolerance())) {
+                cp.restoreFlow(flow);
                 allFlows.remove(flow);
-                continue;
-
+                flow.updateTransmittedBw();
             } else {
-
-                if (!cp.upgradeFlow(flow, null)) {
-
-                    if (!addLightPath(flow)) {
-
-                        allFlows.remove(flow);
-
-                        if (flow.isDelayTolerant()) {
-
-                            //Delay tolerant
-                            cp.delayFlow(flow);
-
-                        } else {
-
-                            //Drop Flow
-                            cp.dropFlow(flow);
-
-                        }
-                        flow.updateTransmittedBw();
-
-                    }
-
-                }
-
+                cp.dropFlow(flow);
+                allFlows.remove(flow);
             }
-
         }
-
     }
 
     @Override
