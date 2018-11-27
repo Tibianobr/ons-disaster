@@ -10,9 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
-
 import ons.*;
-
 import static ons.ra.EON_FDM.convertIntegers;
 import ons.util.Dijkstra;
 import ons.util.WeightedGraph;
@@ -61,8 +59,8 @@ public class EON_QFDDM implements RA{
        /* ArrayList<Integer>[] paths = Ye nKSP.kShortestPaths(graph, flow.getSource(), flow.getDestination(), 3);
         flow.setPaths(paths);   */    
        ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(cp.getPT().getWeightedGraph(), flow.getSource(), flow.getDestination(), 3);
-       flow.setPaths(paths);
-
+       flow.setPaths(paths);  
+        
         //this.graph = this.getPostDisasterGraph(cp.getPT());
         
         OUTER:
@@ -349,8 +347,7 @@ public class EON_QFDDM implements RA{
         //Step 4: For the first connection c in set H, if αc ≥ 1, remove
         //this connection, go to Step 4; otherwise,
         //upgrade connection c by 1 bandwidth unit; if
-        //successful, go to Step 3; otherwise, go to Step 5.
-        System.out.println(allFlows.size());
+        //successful, go to Step 3; otherwise, go to Step 5.        
         while (allFlows.size() > 0) {
 
             Collections.sort(allFlows, comparator);
