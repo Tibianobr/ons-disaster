@@ -300,19 +300,77 @@ public class EON_QFDDM_NOTG implements RA {
                 return 0;
             }
         };
-        while (allFlows.size() > 0) {
+        System.out.println(allFlows.size());
+        while (interuptedFlows.size() > 0) {
             Collections.sort(allFlows, comparator);
-            Flow flow = allFlows.get(0);
+            Flow flow = interuptedFlows.get(0);
             //TODO
-            if (0 >= (flow.getBwReq() * flow.getServiceInfo().getDegradationTolerance())) {
+         //   System.out.println("É possível? = " + checkPath(flow));
+            if (checkPath(flow)) {
                 cp.restoreFlow(flow);
-                allFlows.remove(flow);
+                interuptedFlows.remove(flow);
                 flow.updateTransmittedBw();
+                continue;
             } else {
                 cp.dropFlow(flow);
-                allFlows.remove(flow);
+                interuptedFlows.remove(flow);
             }
         }
+    }
+
+
+    public boolean checkPath(Flow flow) {
+
+        ArrayList<Integer> nodes;
+        Boolean status;
+        int[] links;
+
+        if (flow.getPaths() == null) {
+            ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(getPostDisasterGraph(cp.getPT()), flow.getSource(), flow.getDestination(), 3);
+            flow.setPaths(paths);
+        }
+
+        OUTER:
+        for (ArrayList<Integer> path : flow.getPaths()) {
+            status = false;
+            nodes = path;
+            if (nodes.size() == 0) {
+                continue;
+            }
+            // Create the links vector
+            links = new int[nodes.size() - 1];
+            for (int j = 0; j < nodes.size() - 1; j++) {
+                links[j] = cp.getPT().getLink(nodes.get(j), nodes.get(j + 1)).getID();
+            }
+            // Get the size of the route in km
+            double sizeRoute = 0;
+            for (int i = 0; i < links.length; i++) {
+                sizeRoute += ((EONLink) cp.getPT().getLink(links[i])).getWeight();
+            }
+            // Adaptative modulation:
+            int modulation = Modulation.getBestModulation(sizeRoute);
+
+            // Calculates the required slots
+          //  System.out.println(flow.getBwReq() + " tol = " + flow.getServiceInfo().getDegradationTolerance());
+       //     System.out.println((int) (flow.getBwReq() * (1 - flow.getServiceInfo().getDegradationTolerance())));
+            int requiredSlots = Modulation.convertRateToSlot((int) (flow.getBwReq() * (1- flow.getServiceInfo().getDegradationTolerance())), EONPhysicalTopology.getSlotSize(), modulation);
+            if (requiredSlots >= 100000)
+                continue OUTER;
+
+            // Evaluate if each link have space to the required slots
+            for (int i = 0; i < links.length; i++) {
+              //  System.out.println(((EONLink) cp.getPT().getLink(links[i])).hasSlotsAvaiable(requiredSlots) + " req = " +  requiredSlots + " avaiable = " + ((EONLink) cp.getPT().getLink(links[i])).getAvaiableSlots());
+                if (((EONLink) cp.getPT().getLink(links[i])).isIsInterupted() || !((EONLink) cp.getPT().getLink(links[i])).hasSlotsAvaiable(requiredSlots)) {
+                    break;
+                }
+                else {
+                    status = true;
+                }
+            }
+            if(status)
+                return true;
+        }
+        return false;
     }
 
     @Override

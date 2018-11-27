@@ -380,6 +380,7 @@ public class EON_QFDDM implements RA{
                     
                     flow.updateTransmittedBw();
                     cp.restoreFlow(flow);
+                  //  System.out.println("restore");
 
                 }
                         
@@ -391,9 +392,7 @@ public class EON_QFDDM implements RA{
                 if (!cp.upgradeFlow(flow, null)) {
 
                     if (!addLightPath(flow)) {
-
                         allFlows.remove(flow);
-
                         if (flow.isDelayTolerant()) {
 
                             //Delay tolerant
