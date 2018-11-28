@@ -374,7 +374,6 @@ public class EON_QFDDM implements RA{
 
             if (flow.calcDegradation() >= 1-flow.getServiceInfo().getDegradationTolerance()) {
                 if(interuptedFlows.contains(flow)){
-                    
                     flow.updateTransmittedBw();
                     cp.restoreFlow(flow);
                   //  System.out.println("restore");

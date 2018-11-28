@@ -9,7 +9,6 @@ import ons.*;
 import ons.util.WeightedGraph;
 import ons.util.YenKSP;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,10 +17,9 @@ import java.util.List;
 import static ons.ra.EON_FDM.convertIntegers;
 
 /**
- * @author Brenno Serrato
- * C:\Users\Tibiano\IdeaProjects\ICC\ons_Final\xml\stest.xml 1 1 50 50 1
+ * @author Brenno_Serrato
  */
-public class EON_QFDDM_RSAMF implements RA {
+public class EON_QFDDM_NOTG_RSAMFPF implements RA {
 
     private ControlPlaneForRA cp;
     private WeightedGraph graph;
@@ -58,7 +56,7 @@ public class EON_QFDDM_RSAMF implements RA {
         long id;
         int current_candidate = -1;
         ArrayList<Candidate> candidateArrayList = new ArrayList<>();
-        LightPath[] lps = new LightPath[1];          
+        LightPath[] lps = new LightPath[1];
        /* ArrayList<Integer>[] paths = Ye nKSP.kShortestPaths(graph, flow.getSource(), flow.getDestination(), 3);
         flow.setPaths(paths);   */
         ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(cp.getPT().getWeightedGraph(), flow.getSource(), flow.getDestination(), 3);
@@ -118,46 +116,45 @@ public class EON_QFDDM_RSAMF implements RA {
 
 
 
-        Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation));
+        Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation).reversed());
 
         for (int k = 0; k < candidateArrayList.size(); k++) {
-        Candidate smallestFrag = getSmallestFrag(candidateArrayList,k);
+            Candidate smallestFrag = getSmallestFrag(candidateArrayList,k);
 
-        for (int i = 0; i < smallestFrag.getLinks().length; i++) {
-            smallestFrag.setSlots(((EONLink) cp.getPT().getLink(smallestFrag.getLinks()[i]))
-                    .getSlotsAvailableToArray(smallestFrag.getRequiredSlots()));
+            for (int i = 0; i < smallestFrag.getLinks().length; i++) {
+                smallestFrag.setSlots(((EONLink) cp.getPT().getLink(smallestFrag.getLinks()[i]))
+                        .getSlotsAvailableToArray(smallestFrag.getRequiredSlots()));
 
-            for (int j = 0; j < smallestFrag.getSlots().length; j++) {
-                        smallestFrag.setLp(cp.createCandidateEONLightPath(
-                        flow.getSource(),
-                        flow.getDestination(),
-                        smallestFrag.getLinks(),
-                        smallestFrag.getSlots()[j],
-                        (smallestFrag.getSlots()[j] + smallestFrag.getRequiredSlots() - 1),
-                        smallestFrag.getModulation()));
-                if ((id = cp.getVT().createLightpath(smallestFrag.getLp())) >= 0) {
-                    // Single-hop routing (end-to-end lightpath)
-                    lps[0] = cp.getVT().getLightpath(id);
-                    if (cp.acceptFlow(flow.getID(), lps)) {
-                    //    System.out.println(smallestFrag.getPath() + " FRAG = " + smallestFrag.getFragmentation());
-                        return;
-                    } else {
-                        // Something wrong
-                        // Dealocates the lightpath in VT and try again
-                        cp.getVT().deallocatedLightpath(id);
+                for (int j = 0; j < smallestFrag.getSlots().length; j++) {
+                    smallestFrag.setLp(cp.createCandidateEONLightPath(
+                            flow.getSource(),
+                            flow.getDestination(),
+                            smallestFrag.getLinks(),
+                            smallestFrag.getSlots()[j],
+                            (smallestFrag.getSlots()[j] + smallestFrag.getRequiredSlots() - 1),
+                            smallestFrag.getModulation()));
+                    if ((id = cp.getVT().createLightpath(smallestFrag.getLp())) >= 0) {
+                        // Single-hop routing (end-to-end lightpath)
+                        lps[0] = cp.getVT().getLightpath(id);
+                        if (cp.acceptFlow(flow.getID(), lps)) {
+                            //      System.out.println(smallestFrag.getPath() + " FRAG = " + smallestFrag.getFragmentation());
+                            return;
+                        } else {
+                            // Something wrong
+                            // Dealocates the lightpath in VT and try again
+                            cp.getVT().deallocatedLightpath(id);
+                        }
                     }
                 }
+
             }
-
-        }
         }
 
-     //   System.out.println("Nenhum dos caminhos foi autorizado, bloqueando a requisição");
+        //   System.out.println("Nenhum dos caminhos foi autorizado, bloqueando a requisição");
         cp.blockFlow(flow.getID());
 
 
     }
-
 
     private boolean rerouteFlow(Flow flow) {
 
@@ -268,7 +265,7 @@ public class EON_QFDDM_RSAMF implements RA {
                     continue;
                 }
             }
-            // First-Fit spectrum assignment in some modulation 
+            // First-Fit spectrum assignment in some modulation
             int[] firstSlot;
             for (int i = 0; i < links.length; i++) {
                 // Try the slots available in each link
@@ -306,131 +303,99 @@ public class EON_QFDDM_RSAMF implements RA {
 
     @Override
     public void disasterArrival(DisasterArea area) {
-
         ArrayList<Flow> survivedFlows = cp.getMappedFlowsAsList();
-        ///Step 1: For each existing/survived connection of set
-        ///S(⊂C), degrade the bandwidth to one unit. 
-
         for (Flow f : survivedFlows) {
-
             if (f.isDegradeTolerant()) {
-
-                cp.degradeFlow(f, /*f.getMaxDegradationNumber()*/ f.getMaxDegradationNumberEon());
-
+                cp.degradeFlow(f, f.getMaxDegradationNumberEon());
             }
-
         }
-
-        //Step 2: For each disrupted connection of set D(⊂C), reprovision
-        //it on the shortest available candidate
-        //path P(c,k) with one bandwidth unit.
-        /*for (Flow flow : cp.getInteruptedFlows()) {
-
-            rerouteFlow(flow);
-
-        }*/
-
         ArrayList<Flow> interuptedFlows = new ArrayList<Flow>(cp.getInteruptedFlows());
-        /*for (Iterator<Flow> i = interuptedFlows.iterator(); i.hasNext();) {
-            Flow flow = i.next();
-            if (flow.calcDegradation() == 0.0f || Double.isNaN(flow.calcDegradation())) {                 
-                cp.dropFlow(flow);
-                flow.updateTransmittedBw();
-                i.remove();
-
-            }
-
-        }*/
-
-        //Step 3: Sort all connections of set H=(S∪D) in ascending
-        //order of αc.        
         ArrayList<Flow> allFlows = new ArrayList<Flow>();
         allFlows.addAll(interuptedFlows);
         allFlows.addAll(survivedFlows);
-
         Comparator<Flow> comparator = new Comparator<Flow>() {
             @Override
             public int compare(Flow t, Flow t1) {
-
-                int t1Deg = t.getServiceInfo().getServiceInfo();
-                int t2Deg = t1.getServiceInfo().getServiceInfo();
-                int sComp = Integer.compare(t1Deg, t2Deg);
-
-                if (sComp != 0) {
-
-                    return sComp;
-
-                } else {
-
-                    return Double.compare(t.getServiceInfo().getDelayTolerance(), t1.getServiceInfo().getDelayTolerance());
-
+                if (t.getBwReq() > t1.getBwReq()) {
+                    return -1;
+                } else if (t.getBwReq() < t1.getBwReq()) {
+                    return 1;
                 }
-
+                return 0;
             }
         };
-
-
-        //Step 4: For the first connection c in set H, if αc ≥ 1, remove
-        //this connection, go to Step 4; otherwise,
-        //upgrade connection c by 1 bandwidth unit; if
-        //successful, go to Step 3; otherwise, go to Step 5.        
+     //   System.out.println(allFlows.size());
         while (allFlows.size() > 0) {
-
             Collections.sort(allFlows, comparator);
             Flow flow = allFlows.get(0);
-
-            /*System.out.println();
-            for(Flow f:allFlows){
-                
-                System.out.println("Classe de serviço: " + f.getServiceInfo().getServiceInfo() + " Degradation Rate: " + f.calcDegradation());
-                
-            }
-            System.out.println();*/
-            /*float aux_degr = 1;
-            if (flow.isDegradeTolerant()) {
-                aux_degr = (flow.getMaxDegradationNumberEon()) / (float) flow.getRequiredSlots();
-            }*/
-
-            if (flow.calcDegradation() >= 1 - flow.getServiceInfo().getDegradationTolerance()) {
-                if (interuptedFlows.contains(flow)) {
-
-                    flow.updateTransmittedBw();
+         //   System.out.println("É possível? = " + checkPath(flow));
+            if (checkPath(flow)) {
+                if(interuptedFlows.contains(flow))
+                {
                     cp.restoreFlow(flow);
-
+                    flow.updateTransmittedBw();
                 }
-
                 allFlows.remove(flow);
-                continue;
-
             } else {
-
-                if (!cp.upgradeFlow(flow, null)) {
-
-                    if (!addLightPath(flow)) {
-
-                        allFlows.remove(flow);
-
-                        if (flow.isDelayTolerant()) {
-
-                            //Delay tolerant
-                            cp.delayFlow(flow);
-
-                        } else {
-
-                            //Drop Flow
-                            cp.dropFlow(flow);
-
-                        }
-                        flow.updateTransmittedBw();
-
-                    }
-
-                }
-
+                cp.dropFlow(flow);
+                allFlows.remove(flow);
             }
+        }
+    }
 
+
+    public boolean checkPath(Flow flow) {
+
+        ArrayList<Integer> nodes;
+        Boolean status;
+        int[] links;
+
+        if (flow.getPaths() == null) {
+            ArrayList<Integer>[] paths = YenKSP.kDisruptedShortestPaths(getPostDisasterGraph(cp.getPT()), flow.getSource(), flow.getDestination(), 3);
+            flow.setPaths(paths);
         }
 
+        OUTER:
+        for (ArrayList<Integer> path : flow.getPaths()) {
+            status = false;
+            nodes = path;
+            if (nodes.size() == 0) {
+                continue;
+            }
+            // Create the links vector
+            links = new int[nodes.size() - 1];
+            for (int j = 0; j < nodes.size() - 1; j++) {
+                links[j] = cp.getPT().getLink(nodes.get(j), nodes.get(j + 1)).getID();
+            }
+            // Get the size of the route in km
+            double sizeRoute = 0;
+            for (int i = 0; i < links.length; i++) {
+                sizeRoute += ((EONLink) cp.getPT().getLink(links[i])).getWeight();
+            }
+            // Adaptative modulation:
+            int modulation = Modulation.getBestModulation(sizeRoute);
+
+            // Calculates the required slots
+          //  System.out.println(flow.getBwReq() + " tol = " + flow.getServiceInfo().getDegradationTolerance());
+       //     System.out.println((int) (flow.getBwReq() * (1 - flow.getServiceInfo().getDegradationTolerance())));
+            int requiredSlots = Modulation.convertRateToSlot((int) (flow.getBwReq() * (1- flow.getServiceInfo().getDegradationTolerance())), EONPhysicalTopology.getSlotSize(), modulation);
+            if (requiredSlots >= 100000)
+                continue OUTER;
+
+            // Evaluate if each link have space to the required slots
+            for (int i = 0; i < links.length; i++) {
+              //  System.out.println(((EONLink) cp.getPT().getLink(links[i])).hasSlotsAvaiable(requiredSlots) + " req = " +  requiredSlots + " avaiable = " + ((EONLink) cp.getPT().getLink(links[i])).getAvaiableSlots());
+                if (((EONLink) cp.getPT().getLink(links[i])).isIsInterupted() || !((EONLink) cp.getPT().getLink(links[i])).hasSlotsAvaiable(requiredSlots)) {
+                    break;
+                }
+                else {
+                    status = true;
+                }
+            }
+            if(status)
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -477,8 +442,6 @@ public class EON_QFDDM_RSAMF implements RA {
         }
 
     }
-
-
     private Candidate getSmallestFrag(List<Candidate> candidateList, Integer k){
         /*int currentCandidate = -1;
         double lessFragPathValue = Double.POSITIVE_INFINITY;
@@ -496,13 +459,12 @@ public class EON_QFDDM_RSAMF implements RA {
         return candidateList.get(lessFragPathId);*/
 
 //        if (k > 0) {
-//            System.out.println(candidateList.get(k - 1).getPath() + " NEGADO");
+//            System.out.println(candidateList.get(k-1).getPath() + " NEGADO");
 //            System.out.println("Tentando com o = " + candidateList.get(k).getPath());
 //        }
 //        else
 //            System.out.println("Tentando com o = " + candidateList.get(k).getPath());
         return candidateList.get(k);
     }
-
 
 }

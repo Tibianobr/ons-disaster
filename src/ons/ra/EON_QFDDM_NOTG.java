@@ -10,6 +10,7 @@ import ons.util.WeightedGraph;
 import ons.util.YenKSP;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -300,20 +301,21 @@ public class EON_QFDDM_NOTG implements RA {
                 return 0;
             }
         };
-        System.out.println(allFlows.size());
-        while (interuptedFlows.size() > 0) {
+     //   System.out.println(allFlows.size());
+        while (allFlows.size() > 0) {
             Collections.sort(allFlows, comparator);
-            Flow flow = interuptedFlows.get(0);
-            //TODO
+            Flow flow = allFlows.get(0);
          //   System.out.println("É possível? = " + checkPath(flow));
             if (checkPath(flow)) {
-                cp.restoreFlow(flow);
-                interuptedFlows.remove(flow);
-                flow.updateTransmittedBw();
-                continue;
+                if(interuptedFlows.contains(flow))
+                {
+                    cp.restoreFlow(flow);
+                    flow.updateTransmittedBw();
+                }
+                allFlows.remove(flow);
             } else {
                 cp.dropFlow(flow);
-                interuptedFlows.remove(flow);
+                allFlows.remove(flow);
             }
         }
     }

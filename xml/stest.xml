@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <eonsim version="0.2">
-    <ra module="EON_QFDDM_NOTG"/>
+    <ra module="EON_QFDDM_NOTG_RSAMF"/>
 
     <trace file="trace.tr"/>
     <!--rate in Mbps 1000Mbps = 1Gbps | 'cos' represents the number of service classes _RSAMF_V2-->
-    <traffic calls="100" load="100" cos="1" statisticStart="0">
+    <traffic calls="100000" load="100" cos="1" statisticStart="0">
         <!--'cos' here starts with '0'-->
         <calls holding-time="1" rate="100000" cos="0" weight="50"/>
         <calls holding-time="1" rate="150000" cos="0" weight="40"/>
