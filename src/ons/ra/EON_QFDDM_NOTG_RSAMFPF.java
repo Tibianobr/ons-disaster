@@ -325,6 +325,7 @@ public class EON_QFDDM_NOTG_RSAMFPF implements RA {
             }
         };
      //   System.out.println(allFlows.size());
+      //  System.out.println("Interrompido = " + interuptedFlows.size());
         while (allFlows.size() > 0) {
             Collections.sort(allFlows, comparator);
             Flow flow = allFlows.get(0);

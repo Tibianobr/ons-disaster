@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <eonsim version="0.2">
-    <ra module="EON_QFDDM_NOTG_RSAMF"/>
+    <ra module="EON_QFDDM_NOTG_RSAMFPF"/>
 
     <trace file="trace.tr"/>
     <!--rate in Mbps 1000Mbps = 1Gbps | 'cos' represents the number of service classes _RSAMF_V2-->

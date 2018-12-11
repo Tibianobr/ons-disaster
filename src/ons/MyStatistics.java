@@ -58,6 +58,7 @@ public class MyStatistics {
     private String bpToString;
     private int droppedFlows;
     private int restoredFlows;
+    private double networkFragmentation;
     private float dropRate;
     private float restoreRate;
     private double droppedTraffic;
@@ -87,6 +88,7 @@ public class MyStatistics {
     private float disruptionPeriod;
     private float disruptionPeriodRate;
     private int numFlowsDelayedRestored;
+    private PhysicalTopology pt;
         
 
     
@@ -114,6 +116,7 @@ public class MyStatistics {
         flowfails = 0;
         lpsfails = 0;
         trafficfails = 0;
+        networkFragmentation = 0.;
 
         execTime = 0;
         //add by lucasrc
@@ -191,6 +194,7 @@ public class MyStatistics {
         this.blockedPairsDiff = new int[numNodes][numNodes][numClasses];
         this.requiredBandwidthPairsDiff = new int[numNodes][numNodes][numClasses];
         this.blockedBandwidthPairsDiff = new int[numNodes][numNodes][numClasses];
+        this.pt = pt;
         //
         if(pt instanceof EONPhysicalTopology) {
             this.modulations = new long[EONPhysicalTopology.getMaxModulation() + 1];
@@ -416,9 +420,13 @@ public class MyStatistics {
                 bbrDiff[i] = ((float) blockedBandwidthDiff[i]) / ((float) requiredBandwidthDiff[i]) * 100;
             }
         }
-        
+
+        System.out.println("Conexões interrompidas totais: " + (droppedFlows+restoredFlows));
         System.out.println("Flows Dropadas: " + droppedFlows + " Restauradas: " + restoredFlows);
-               
+
+
+
+
         String stats = "";
         stats += "BR \t: " + Float.toString(blockProb) + "%\n";
         DecimalFormat df = new DecimalFormat("0.00000000");        
@@ -511,7 +519,21 @@ public class MyStatistics {
             this.modulations[((EONLightPath) lp).getModulation()]++;
         }
     }
-    
+
+
+    public Double getNetworkFragmentation()
+    {
+        int slots_total = -1;
+        int slots_cont = -1;
+
+        for(int i = 0; i<=85;i++)
+        {
+            slots_total += ((EONLink) pt.getLink(i)).getAvaiableSlots();
+            slots_cont += ((EONLink) pt.getLink(i)).maxSizeAvaiable();
+        }
+
+        return 1-((double)slots_cont/(double)slots_total);
+    }
     /**
      * When a lightpath is deallocated
      * @param lp the lightpath
