@@ -303,6 +303,7 @@ public class EON_QFDDM_NOTG implements RA {
         };
      //   System.out.println(allFlows.size());
         while (allFlows.size() > 0) {
+            System.out.println(((EONPhysicalTopology) cp.getPT()).getAvailableSlots());
             Collections.sort(allFlows, comparator);
             Flow flow = allFlows.get(0);
          //   System.out.println("É possível? = " + checkPath(flow));

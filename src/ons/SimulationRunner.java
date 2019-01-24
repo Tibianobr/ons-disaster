@@ -38,5 +38,16 @@ public class SimulationRunner {
             }
             cp.newEvent(event);
         }
+        int slots_total = 0;
+        int slots_cont = 0;
+
+        for(int i = 0; i<=85;i++)
+        {
+            System.out.println(((EONLink) cp.getPT().getLink(i)).maxSizeAvaiable() + "/" + ((EONLink) cp.getPT().getLink(i)).getAvaiableSlots());
+            slots_total += ((EONLink) cp.getPT().getLink(i)).getAvaiableSlots();
+            slots_cont += ((EONLink) cp.getPT().getLink(i)).maxSizeAvaiable();
+        }
+
+        System.out.println("FRAG = " +  ((double)slots_cont/(double)slots_total));
     }
 }

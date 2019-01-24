@@ -45,18 +45,18 @@ public class TrafficGenerator {
     public TrafficGenerator(Element xml, Element xml2, double forcedLoad) {
         int rate, cos, weight;
         double holdingTime;
-        Element xml_links = (Element)xml.getOwnerDocument().getElementsByTagName("links").item(0);
+        Element xml_links = (Element) xml.getOwnerDocument().getElementsByTagName("links").item(0);
         globalCount = -1;
         calls = Integer.parseInt(xml.getAttribute("calls"));
         load = forcedLoad;
         if (load == 0) {
             load = Double.parseDouble(xml.getAttribute("load"));
         }
-        if(xml.hasAttribute("max-rate")){
+        if (xml.hasAttribute("max-rate")) {
             maxRate = Integer.parseInt(xml.getAttribute("max-rate"));
-        } else if(xml_links.hasAttribute("slot-size")){
+        } else if (xml_links.hasAttribute("slot-size")) {
             maxRate = Integer.parseInt(xml_links.getAttribute("slot-size"));
-        }else{
+        } else {
             maxRate = 0;
         }
 
@@ -72,7 +72,7 @@ public class TrafficGenerator {
         }
 
         callsTypesInfo = new TrafficInfo[numberCallsTypes];
-         
+
         TotalWeight = 0;
         meanRate = 0;
         meanHoldingTime = 0;
@@ -95,48 +95,50 @@ public class TrafficGenerator {
                 System.out.println("COS: " + Integer.toString(cos) + ".");
                 System.out.println("Rate: " + Integer.toString(rate) + "Mbps.");
                 System.out.println("Mean holding time: " + Double.toString(holdingTime) + " seconds.");
-            }            
-        }        
-       
+            }
+        }
+
         // Process Services
         NodeList servicesList = xml2.getElementsByTagName("service");
         numberServicesTypes = servicesList.getLength();
-        if (Simulator.verbose) {
+        if (true) {
             System.out.println(Integer.toString(numberServicesTypes) + " type(s) of services:");
         }
 
         servicesTypesInfo = new ServiceInfo[numberServicesTypes];
-         
-        servicesTotalWeight = 0;     
+
+        servicesTotalWeight = 0;
 
         for (int i = 0; i < numberServicesTypes; i++) {
             servicesTotalWeight += Integer.parseInt(((Element) servicesList.item(i)).getAttribute("weight"));
-        }      
-        
+        }
+
         for (int i = 0; i < numberServicesTypes; i++) {
             int serviceClass = Integer.parseInt(((Element) servicesList.item(i)).getAttribute("class"));
             float degrTolMin = Float.parseFloat(((Element) servicesList.item(i)).getAttribute("degradation-tolerance-min"));
             float degrTolMax = Float.parseFloat(((Element) servicesList.item(i)).getAttribute("degradation-tolerance-max"));
             float delayTolMin = Float.parseFloat(((Element) servicesList.item(i)).getAttribute("delay-tolerance-min"));
             float delayTolMax = Float.parseFloat(((Element) servicesList.item(i)).getAttribute("delay-tolerance-max"));
-            weight = Integer.parseInt(((Element) servicesList.item(i)).getAttribute("weight"));  
+            weight = Integer.parseInt(((Element) servicesList.item(i)).getAttribute("weight"));
             float degrTol = 0;
-            if(degrTolMax!=0)
+            if (degrTolMax != 0)
                 degrTol = (float) ThreadLocalRandom.current().nextDouble(degrTolMin, degrTolMax);
             float delayTol = 0;
-            if(delayTolMax!=0)
+            if (delayTolMax != 0)
                 delayTol = (float) ThreadLocalRandom.current().nextDouble(delayTolMin, delayTolMax);
-            servicesTypesInfo[i] = new ServiceInfo(serviceClass,degrTol,delayTol,weight);
-            if (false) {
-                System.out.println("#################################");
-                System.out.println("Class: " + Integer.toString(serviceClass) + ".");
-                System.out.println("Degradation: " + Float.toString(degrTol) + ".");
-                System.out.println("Delay: " + Float.toString(delayTol));
-                System.out.println("Weight" + Integer.toString(weight));
+            servicesTypesInfo[i] = new ServiceInfo(serviceClass, degrTol, delayTol, weight);
+            if (true) {
+                if (false) {
+                    System.out.println("#################################");
+                    System.out.println("Class: " + Integer.toString(serviceClass) + ".");
+                    System.out.println("Degradation: " + Float.toString(degrTol) + ".");
+                    System.out.println("Delay: " + Float.toString(delayTol));
+                    System.out.println("Weight" + Integer.toString(weight));
+                }
             }
+
+
         }
-        
-        
     }
 
     /**

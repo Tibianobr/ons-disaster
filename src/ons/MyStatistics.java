@@ -353,6 +353,8 @@ public class MyStatistics {
         stats += "Average of Virtual Hops per request: "+used+"\n";
         used = (double) this.physicalHops / (double) accepted;
         stats += "Average of Physical Hops per request: "+used+"\n";
+
+
         
         if(simType == 1){
             double averageSpectrumAvailable = availableSlots/times;
@@ -493,7 +495,13 @@ public class MyStatistics {
         if(simType == 1){
             double averageSpectrumAvailable = availableSlots/times;
             double spectrumAvailableRatio = (averageSpectrumAvailable*100.0)/MAX_AvailableSlots;
+
+
             stats += "Spectrum Available: " + spectrumAvailableRatio + "%\n";
+            double frag_rede = (double) MAX_AvailableSlots / (double )availableSlots;
+            System.out.println(MAX_AvailableSlots);
+            System.out.println(averageSpectrumAvailable);
+            stats += "Fragmentação da rede: " + minDegr + "%\n";
             for(int i = 0; i < modulations.length; i++){
                 stats += Modulation.getModulationName(i) +" Modulation used: " + Float.toString((float) modulations[i]/(float) numLightPaths*100) + "%\n";
             }
