@@ -48,7 +48,7 @@ public class SimulationRunner {
             slots_cont += ((EONLink) cp.getPT().getLink(i)).maxSizeAvaiable();
         }
 
-        System.out.println("FRAG = " +  (1-((double)slots_cont/(double)slots_total)));
+        System.out.println("FRAG = " +  (((double)slots_cont/(double)slots_total)));
 
     }
 }
