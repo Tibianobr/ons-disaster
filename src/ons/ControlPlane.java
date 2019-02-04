@@ -124,7 +124,8 @@ public class ControlPlane implements ControlPlaneForRA { // RA is Routing Assign
     
     @Override
     public void restoreFlow(Flow f){
-        
+
+        //System.out.println("Restore function");
          if(f.calcDegradation()<st.getMinDegr()&&f.calcDegradation()>0)
                 st.setMinDegr(f.calcDegradation());
         
