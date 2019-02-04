@@ -456,15 +456,26 @@ public class Simulator {
                         
                     }
                     
-                    File dirnumRestDelay = new File("Chart/testes/"+module+"/numRestDelay");
-                    if(!dirnumRestDelay.exists()){
-                        
+                   File dirnumRestDelay = new File("Chart/testes/"+module+"/numRestDelay");
+                        if(!dirnumRestDelay.exists()){
+
+                            try {
+                                dirnumRestDelay.mkdirs();
+                            } catch (SecurityException se) {
+                                //handle it
+                            }
+
+                        }
+
+                    File networkFrag = new File("Chart/testes/"+module+"/networkFrag");
+                    if(!networkFrag.exists()){
+
                         try {
-                            dirnumRestDelay.mkdirs();
+                            networkFrag.mkdirs();
                         } catch (SecurityException se) {
                             //handle it
                         }
-                        
+
                     }
                     
                     File dirdisPeriod = new File("Chart/testes/"+module+"/disPeriod");
@@ -574,7 +585,12 @@ public class Simulator {
                     writer17.close();
                     
                     PrintWriter writer12 = new PrintWriter(new FileWriter("Chart/testes/"+module+"/wait/wait_"+Double.toString(forcedLoad)+".txt", true));
-                    
+
+                    DecimalFormat df3 = new DecimalFormat("#.########", new DecimalFormatSymbols(Locale.US));
+                    PrintWriter writer18 = new PrintWriter(new FileWriter("Chart/testes/"+module+"/networkfrag/networkfrag_"+Double.toString(forcedLoad)+".txt", true));
+                    writer18.println(df3.format(st.getNetworkFragmentation()));
+                    writer18.close();
+
                     if(st.getNumDelay()>0){
                         DecimalFormat df2 = new DecimalFormat("#.###", new DecimalFormatSymbols(Locale.US));
                         String result = df2.format(st.getWaitMean()/st.getNumDelay());
