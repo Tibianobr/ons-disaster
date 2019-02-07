@@ -248,19 +248,25 @@ public class EON_QFDDM_RESMF implements RA {
             }
         }
 
+        List<Candidate> remove = new ArrayList<>();
+
         // Se ficou inválido o caminho ele exclui da lista
         for (Candidate candidate : candidateArrayList) {
-            if (!candidate.isValid())
-                candidateArrayList.remove(candidate);
-            else {
+            if (candidate.isValid())
                 for (int i = 0; i < candidate.getLinks().length; i++) {
                     candidate.setSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getSlotsAvailableToArray(candidate.getRequiredSlots()));
                     candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
                     candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
                     candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
                 }
+            else {
+                remove.add(candidate);
             }
         }
+
+        for (Candidate c:remove) {
+            candidateArrayList.remove(c); }
+
         Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation));
         for (int k = 0; k < candidateArrayList.size(); k++) {
             Candidate smallestFrag = getSmallestFrag(candidateArrayList, k);
