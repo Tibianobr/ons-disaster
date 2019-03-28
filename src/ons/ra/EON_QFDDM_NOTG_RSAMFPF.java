@@ -86,6 +86,7 @@ public class EON_QFDDM_NOTG_RSAMFPF implements RA {
                 candidate.setSizeRoute(candidate.getSizeRoute() + cp.getPT().getLink(candidate.getLinks()[i]).getWeight());
 
             candidate.setModulation(Modulation.getBestModulation(candidate.getSizeRoute()));
+            flow.setModulation(candidate.getModulation());
             candidate.setRequiredSlots(Modulation.convertRateToSlot(flow.getBwReq(), EONPhysicalTopology.getSlotSize(), candidate.getModulation()));
 
             if (candidate.getRequiredSlots() >= 100000) continue OUTER;
@@ -110,6 +111,7 @@ public class EON_QFDDM_NOTG_RSAMFPF implements RA {
                     candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
                     candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
                     candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
+                    System.out.println("FRAG = " + candidate.getFragmentation());
                 }
             }
         }
@@ -117,6 +119,10 @@ public class EON_QFDDM_NOTG_RSAMFPF implements RA {
 
 
         Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation).reversed());
+
+        for (Candidate c:candidateArrayList) {
+            System.out.println(c.getFragmentation());
+        }
 
         for (int k = 0; k < candidateArrayList.size(); k++) {
             Candidate smallestFrag = getSmallestFrag(candidateArrayList,k);

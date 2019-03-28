@@ -15,6 +15,8 @@ public class Candidate {
     private int[] slots;
     private EONLightPath lp;
     private boolean valid;
+    private Double networkFragmentation;
+    private long id;
 
 
     public Candidate(ArrayList<Integer> path) {
@@ -27,6 +29,14 @@ public class Candidate {
         this.fragmentation = 0.0;
         this.valid = true;
 
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public ArrayList<Integer> getPath() {
@@ -123,5 +133,13 @@ public class Candidate {
 
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public Double getNetworkFragmentation() {
+        return networkFragmentation;
+    }
+
+    public void setNetworkFragmentation(Double networkFragmentation) {
+        this.networkFragmentation = networkFragmentation;
     }
 }
