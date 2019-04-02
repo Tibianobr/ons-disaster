@@ -101,6 +101,8 @@ public class EON_QFDDM_NOTG_RSAMFPF implements RA {
             }
         }
 
+      //  Integer link_frag = -1;
+
         // Se ficou inválido o caminho ele exclui da lista
         for (Candidate candidate : candidateArrayList) {
             if (!candidate.isValid())
@@ -108,21 +110,27 @@ public class EON_QFDDM_NOTG_RSAMFPF implements RA {
             else {
                 for (int i = 0; i < candidate.getLinks().length; i++) {
                     candidate.setSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getSlotsAvailableToArray(candidate.getRequiredSlots()));
-                    candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
-                    candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
-                    candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
-                    System.out.println("FRAG = " + candidate.getFragmentation());
+                    candidate.setLargerSlotBlock(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
+                    candidate.setFreeSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
+                    if (1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()) < candidate.getFragmentation())
+                    {
+                        candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
+                     //   link_frag = i;
+                    }
+                  //  System.out.println(i + " FRAG = " + (1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots())));
                 }
             }
+           // System.out.println("Maior frag detectada = " + link_frag);
         }
+
 
 
 
         Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation).reversed());
 
-        for (Candidate c:candidateArrayList) {
-            System.out.println(c.getFragmentation());
-        }
+//        for (Candidate c:candidateArrayList) {
+//            System.out.println(c.getFragmentation());
+//        }
 
         for (int k = 0; k < candidateArrayList.size(); k++) {
             Candidate smallestFrag = getSmallestFrag(candidateArrayList,k);
