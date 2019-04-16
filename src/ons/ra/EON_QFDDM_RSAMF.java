@@ -139,6 +139,7 @@ public class EON_QFDDM_RSAMF implements RA {
                     // Single-hop routing (end-to-end lightpath)
                     lps[0] = cp.getVT().getLightpath(id);
                     if (cp.acceptFlow(flow.getID(), lps)) {
+                    //    System.out.println(smallestFrag.getPath() + " FRAG = " + smallestFrag.getFragmentation());
                         return;
                     } else {
                         // Something wrong
@@ -377,6 +378,18 @@ public class EON_QFDDM_RSAMF implements RA {
 
             Collections.sort(allFlows, comparator);
             Flow flow = allFlows.get(0);
+
+            /*System.out.println();
+            for(Flow f:allFlows){
+                
+                System.out.println("Classe de serviço: " + f.getServiceInfo().getServiceInfo() + " Degradation Rate: " + f.calcDegradation());
+                
+            }
+            System.out.println();*/
+            /*float aux_degr = 1;
+            if (flow.isDegradeTolerant()) {
+                aux_degr = (flow.getMaxDegradationNumberEon()) / (float) flow.getRequiredSlots();
+            }*/
 
             if (flow.calcDegradation() >= 1 - flow.getServiceInfo().getDegradationTolerance()) {
                 if (interuptedFlows.contains(flow)) {
