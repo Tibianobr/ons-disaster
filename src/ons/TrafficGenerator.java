@@ -127,7 +127,7 @@ public class TrafficGenerator {
             if(delayTolMax!=0)
                 delayTol = (float) ThreadLocalRandom.current().nextDouble(delayTolMin, delayTolMax);
             servicesTypesInfo[i] = new ServiceInfo(serviceClass,degrTol,delayTol,weight);
-            if (true) {
+            if (false) {
                 System.out.println("#################################");
                 System.out.println("Class: " + Integer.toString(serviceClass) + ".");
                 System.out.println("Degradation: " + Float.toString(degrTol) + ".");

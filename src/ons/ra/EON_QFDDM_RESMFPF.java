@@ -255,9 +255,13 @@ public class EON_QFDDM_RESMFPF implements RA {
             if (candidate.isValid())
                 for (int i = 0; i < candidate.getLinks().length; i++) {
                     candidate.setSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getSlotsAvailableToArray(candidate.getRequiredSlots()));
-                    candidate.setLargerSlotBlock(candidate.getLargerSlotBlock() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
-                    candidate.setFreeSlots(candidate.getFreeSlots() + ((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
-                    candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
+                    candidate.setLargerSlotBlock(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).maxSizeAvaiable());
+                    candidate.setFreeSlots(((EONLink) cp.getPT().getLink(candidate.getLinks()[i])).getAvaiableSlots());
+                    if (1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()) < candidate.getFragmentation())
+                    {
+                        candidate.setFragmentation(1 - ((double) candidate.getLargerSlotBlock() / (double) candidate.getFreeSlots()));
+                        //   link_frag = i;
+                    }
                 }
             else {
                 remove.add(candidate);
