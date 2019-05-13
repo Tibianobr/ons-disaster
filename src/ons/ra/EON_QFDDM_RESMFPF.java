@@ -270,7 +270,7 @@ public class EON_QFDDM_RESMFPF implements RA {
         Collections.sort(candidateArrayList, Comparator.comparingDouble(Candidate::getFragmentation).reversed());
         for (int k = 0; k < candidateArrayList.size(); k++) {
             Candidate smallestFrag = getSmallestFrag(candidateArrayList, k);
-            //  System.out.println(smallestFrag.getFragmentation());
+              System.out.println(smallestFrag.getFragmentation());
 
             for (int i = 0; i < smallestFrag.getLinks().length; i++) {
                 smallestFrag.setSlots(((EONLink) cp.getPT().getLink(smallestFrag.getLinks()[i]))
