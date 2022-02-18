@@ -18,6 +18,7 @@ import static ons.ra.EON_FDM.convertIntegers;
 
 /**
  * @author Brenno_Serrato
+ * EON_QFDDM_NOTG_RSAMFPF -> DiffRM-Não Gradual Ciente MFPF
  */
 public class EON_QFDDM_NOTG_RSAMFPF implements RA {
 

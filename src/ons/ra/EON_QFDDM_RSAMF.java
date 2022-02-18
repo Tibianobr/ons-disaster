@@ -20,6 +20,7 @@ import static ons.ra.EON_FDM.convertIntegers;
 /**
  * @author Brenno Serrato
  * C:\Users\Tibiano\IdeaProjects\ICC\ons_Final\xml\stest.xml 1 1 50 50 1
+ * EON_QFDDM_RSAMF -> DiffRM Não Gradual MF
  */
 public class EON_QFDDM_RSAMF implements RA {
 

@@ -19,6 +19,7 @@ import ons.util.YenKSP;
 /**
  *
  * @author Gab
+ * EON_QFDDM -> DiffRM
  */
 public class EON_QFDDM implements RA{
 
